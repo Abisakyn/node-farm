@@ -1,9 +1,12 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const morgan = require('morgan');
 
 dotenv.config();
 
 const app = express();
+
+app.use(morgan('dev'));
 
 app.use(express.json());
 
