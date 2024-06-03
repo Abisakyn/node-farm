@@ -13,31 +13,31 @@ const userSchema = new Schema({
         type: String,
         required: true,
         unique: true,
-        lowercase: true, //when you want to converte the entered email to lowercase
-        validate:[validator.isEmail,'please enter a valid email'] // when you want to use a custom validator
+        lowercase: true,
+        validate: [validator.isEmail, 'Please enter a valid email']
     },
-    photo:{
+    photo: {
         type: String,
         required: false
     },
     password: {
         type: String,
         required: true,
-        minLength: 8
+        minlength: 8,
+        select: false
     },
     passwordConfirm: {
         type: String,
         required: true,
-        minLength: 8,
+        minlength: 8,
         validate: {
-            //this only works on save!!
             validator: function(value) {
                 return value === this.password;
             },
             message: 'Passwords are not the same'
         }
     },
-    OTP:{
+    OTP: {
         type: String,
         required: false
     },
@@ -54,18 +54,15 @@ const userSchema = new Schema({
 });
 
 userSchema.pre('save', async function(next) {
+    if (!this.isModified('password')) return next();
 
-    //only run this function if password is actually modified
-    if(!this.isModified('password'))return next();
-
-    //hash is asyn while hashSync is synchronous which can lead to an event loop
-    //hash the password
     this.password = await bcryptjs.hash(this.password, 12);
-
-    //delete the passwordConfirm field
     this.passwordConfirm = undefined;
     next();
 });
 
+userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
+    return await bcryptjs.compare(candidatePassword, userPassword);
+};
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);
