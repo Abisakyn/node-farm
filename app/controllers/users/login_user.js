@@ -1,28 +1,31 @@
-const { compareSync } = require('bcryptjs')
-const User = require('../../models/users/user')
-const AppError =require('../../utils/appError')
+const jwt = require('jsonwebtoken');
+const User = require('../../models/users/user');
+const AppError = require('../../utils/appError');
 
-exports.loginUser = async (req, res)=>{
-    const {email,password}=req.body
+exports.loginUser = async (req, res, next) => {
+    const { email, password } = req.body;
 
-    try{
-        if(!email ||!password){
-            next(new AppError('please enter email and password',400))
-        }
-        const user = await User.findOne({ email: email, isVerified: true });
-        if (!user) {
-            return res.status(404).json({ error: 'User not found or not verified' });
+    try {
+        if (!email || !password) {
+            return next(new AppError('Please enter email and password', 400));
         }
 
-        const isPassword = await compareSync(password, user.password)
+        const user = await User.findOne({ email: email}).select('+password');
 
-        if(!isPassword){
-            return res.status(404).json({error:'Password is incorrect'})
+        if (!user || !(await user.correctPassword(password, user.password))) {
+            return next(new AppError('Password or email is incorrect', 401));
         }
 
-        return res.json({message:"Login successful"})
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+            expiresIn: process.env.JWT_EXPIRES_IN
+        });
 
-    }catch(error){
-        res.status(500).json({error:error.message})
+        return res.json({
+            status: 'success',
+            token: token
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-}
+};
