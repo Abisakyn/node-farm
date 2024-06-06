@@ -1,9 +1,9 @@
-const jwt =require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const User = require('../../models/users/user');
 const bcryptjs = require('bcryptjs');
 
 exports.signup = async (req, res) => {
-    const { name, email, password,passwordConfirm } = req.body;
+    const { name, email, password, passwordConfirm, role } = req.body;
 
     try {
         const user = await User.findOne({ email: email });
@@ -12,24 +12,23 @@ exports.signup = async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        //const hashedPassword = await bcryptjs.hash(password, 10);
-
+        // Create a new user with the provided details
         const newUser = new User({
             name,
             email,
             password,
-            passwordConfirm
+            passwordConfirm,
+            role // Include the role field
         });
 
-        //asign token
-
+        // Assign token
         const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN
         });
 
         await newUser.save();
 
-        return res.status(201).json({ newUser,token });
+        return res.status(201).json({ newUser, token });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
