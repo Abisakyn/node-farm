@@ -10,7 +10,7 @@ exports.loginUser = async (req, res, next) => {
             return next(new AppError('Please enter email and password', 400));
         }
 
-        const user = await User.findOne({ email: email}).select('+password');
+        const user = await User.findOne({ email }).select('+password');
 
         if (!user || !(await user.correctPassword(password, user.password))) {
             return next(new AppError('Password or email is incorrect', 401));
@@ -19,6 +19,18 @@ exports.loginUser = async (req, res, next) => {
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN
         });
+
+        const cookieOptions = {
+            expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+            httpOnly: true, // cookie cannot be accessed or modified in any way by the browser
+            secure: false, // only accept https
+            sameSite: 'none'
+        };
+
+        res.cookie('jwt', token, cookieOptions);
+
+        //remove the password 
+        user.password = undefined;
 
         return res.json({
             status: 'success',
