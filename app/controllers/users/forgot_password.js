@@ -17,7 +17,7 @@ exports.forgotPassword = async (req,res,next)=>{
     await user.save({validateBeforeSave:false});
     //send it to user email
 
-    const emailResponse =await helpers.sendEmail(email,'Reset Token','Reset Token')
+    const emailResponse =await helpers.sendEmail(email,'Reset Token',`Reset Token:${token}`);
     if(!emailResponse){
         return res.status(500).json({message:'Email not sent'})
     }
