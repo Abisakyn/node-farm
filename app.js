@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet')
 const mongoSanitizer = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const hpp =require('hpp');
 
 dotenv.config();
 
@@ -34,6 +35,14 @@ app.use(express.json({limit:'10kb'}));
 app.use(mongoSanitizer());
 //Data sanitization against XSS
 app.use(xss());
+
+//Prevent parameter pollution
+app.use(hpp({
+    whitelist:[
+        'duration'
+    ]
+}));
+
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
     //console.log(req.headers);
