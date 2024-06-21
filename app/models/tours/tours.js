@@ -7,23 +7,12 @@ const toursSchema = new Schema({
         type: String,
         required: true
     },
+    nameOfTheMovie:{
+        type: String,
+        required: true
+    },
     image:[String],
-    secretTour:{
-        type: Boolean,
-        default: false
-    },
-    startLocation:{
-        //GeoJSON
-        type: {
-            type: String,
-            default: 'Point', 
-            enum:['Point']
-        },
-        coordinates: [Number], //latitude,longitude
-        address: String,
-        description: String
-    },
-    locations:[
+    location:[
         {
             type: {
                 type: String,
@@ -32,8 +21,7 @@ const toursSchema = new Schema({
             },
             coordinates: [Number], //latitude,longitude
             address: String,
-            description: String,
-            day: Number
+            description: String
         }
     ]
 });
