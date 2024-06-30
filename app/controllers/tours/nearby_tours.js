@@ -29,10 +29,10 @@ exports.nearbyTours = async (req, res) => {
 
         res.status(200).json({ sortedTours });
     } catch (err) {
-        console.error(err);
         res.status(500).json({
             status: 'fail',
-            message: 'Failed to retrieve nearby tours'
+            message: 'Failed to retrieve nearby tours',
+            error: err.message
         });
     }
 };
