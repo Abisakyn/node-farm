@@ -12,16 +12,16 @@ exports.signup = async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        // Create a new user with the provided details
+        
         const newUser = new User({
             name,
             email,
             password,
             passwordConfirm,
-            role // Include the role field
+            role 
         });
 
-        // Assign token
+        
         const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN
         });

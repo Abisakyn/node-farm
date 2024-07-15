@@ -6,16 +6,14 @@ exports.forgotPassword = async (req,res,next)=>{
      const email =req.body.email;
 
      try{
-    //get user based on POSTed email
         const user =await User.findOne({ email: email})
         if(!user){
             return res.status(404).json({message:'User not found'})
         }
-    //create token
+  
     const token = await user.createPasswordResetToken();
 
     await user.save({validateBeforeSave:false});
-    //send it to user email
 
     const emailResponse =await helpers.sendEmail(email,'Reset Token',`Reset Token:${token}`);
     if(!emailResponse){
