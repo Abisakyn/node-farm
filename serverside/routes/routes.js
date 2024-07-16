@@ -20,7 +20,7 @@ router.post('/forgot-password',forgotPassword)
 router.post('/reset-password',resetPassword)
 router.patch('/updateMyPassword/:id',protect,updatePassword)
 router.post('/add-tours',protect,restrictTo('admin'), AddTours)
-router.get('/get-alltours',protect,getAllTours)
+router.get('/get-alltours',getAllTours)
 router.get('/nearby-tours/:lat/:lng', protect,nearbyTours);
 
 module.exports = router;

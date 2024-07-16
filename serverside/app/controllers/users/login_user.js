@@ -29,7 +29,7 @@ exports.loginUser = async (req, res, next) => {
 
         res.cookie('jwt', token, cookieOptions);
 
-        //remove the password 
+         
         user.password = undefined;
 
         return res.json({
