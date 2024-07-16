@@ -8,6 +8,7 @@ const helmet = require('helmet')
 const mongoSanitizer = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp =require('hpp');
+const cors = require('cors');
 
 dotenv.config();
 
@@ -27,6 +28,8 @@ app.use('/api', limiter);
 
 
 app.use(morgan('dev'));
+
+app.use(cors());
 
 //body parser,reading data from body into req.body
 app.use(express.json({limit:'10kb'}));
